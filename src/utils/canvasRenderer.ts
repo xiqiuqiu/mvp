@@ -36,9 +36,9 @@ export function drawTaxiways(
   }
 
   // Draw node points
-  ctx.fillStyle = '#4a6a8a';
   for (const key in topology.nodes) {
     const node = topology.nodes[key];
+    ctx.fillStyle = '#4a6a8a';
     ctx.beginPath();
     ctx.arc(node.x, node.y, 3, 0, Math.PI * 2);
     ctx.fill();
@@ -50,6 +50,15 @@ export function drawTaxiways(
       ctx.beginPath();
       ctx.arc(node.x, node.y, 8, 0, Math.PI * 2);
       ctx.stroke();
+    }
+
+    // Draw node labels
+    if (node.label) {
+      ctx.fillStyle = '#8ab4f8';
+      ctx.font = '12px monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(node.label, node.x, node.y - 14);
     }
   }
   ctx.restore();

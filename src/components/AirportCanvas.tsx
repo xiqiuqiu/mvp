@@ -17,7 +17,7 @@ export const AirportCanvas: React.FC<Props> = ({ topology, highlightPath, overla
   // Load the chart image once
   useEffect(() => {
     const img = new Image();
-    img.src = '/charts/ZLXY81.jpg'; // We keep it in public directory
+    img.src = 'https://pic1.imgdb.cn/item/69ca0d7d9547e6ce4e3dd74f.jpg';
     img.onload = () => {
       imgRef.current = img;
       setImgLoaded(true);

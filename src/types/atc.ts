@@ -69,3 +69,10 @@ export type AppAction =
   | { type: 'LLM_STATUS'; payload: AppState['llmStatus'] }
   | { type: 'SET_OVERLAY_OPACITY'; payload: number }
   | { type: 'RESET' };
+
+export interface TerminalLog {
+  id: string;
+  time: string;
+  message: string;
+  type: 'info' | 'success' | 'process' | 'error';
+}
