@@ -4,12 +4,14 @@ import type { VoiceResult } from '../types/atc';
 
 export function useVoiceRecognition() {
   const [result, setResult] = useState<VoiceResult>({
-    text: '', confidence: 0, status: 'idle',
+    text: '', interimText: '', confidence: 0, status: 'idle',
   });
   const recognitionRef = useRef<any>(null);
 
   const start = useCallback(() => {
-    // Check if the API is supported (Web Speech API)
+    // Immediately update UI state
+    setResult(r => ({ ...r, status: 'listening', interimText: '', text: '' }));
+
     const SpeechRecognition =
       (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
       
@@ -19,21 +21,32 @@ export function useVoiceRecognition() {
     }
     
     const recognition = new SpeechRecognition();
-    recognition.lang = 'en-US'; // English is standard for ATC
-    recognition.interimResults = false;
+    recognition.lang = 'en-US';
+    recognition.interimResults = true;  // Enable real-time transcription
     recognition.maxAlternatives = 1;
-
-    recognition.onstart = () => {
-      setResult(r => ({ ...r, status: 'listening' }));
-    };
+    recognition.continuous = true;
 
     recognition.onresult = (event: any) => {
-      const res = event.results[0][0];
-      setResult({
-        text: res.transcript,
-        confidence: res.confidence,
-        status: 'done',
-      });
+      let interim = '';
+      let final = '';
+      for (let i = 0; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          final += transcript;
+        } else {
+          interim += transcript;
+        }
+      }
+      if (final) {
+        setResult({
+          text: final,
+          interimText: '',
+          confidence: event.results[event.results.length - 1][0].confidence,
+          status: 'done',
+        });
+      } else {
+        setResult(r => ({ ...r, interimText: interim }));
+      }
     };
 
     recognition.onerror = () => {

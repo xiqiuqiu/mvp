@@ -86,9 +86,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
             )}
             <button 
               className={`mic-button-small ${isListening ? 'listening' : ''}`}
-              onMouseDown={onMicPressStore} onMouseUp={onMicReleaseStore}
-              onMouseLeave={onMicReleaseStore} onTouchStart={onMicPressStore}
-              onTouchEnd={onMicReleaseStore}
+              onClick={isListening ? onMicReleaseStore : onMicPressStore}
             >🎙</button>
             <button className="execute-button" onClick={handleExecute}>
               <span className="icon">➤</span> EXECUTE

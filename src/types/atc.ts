@@ -6,6 +6,7 @@ export type TaxiAction = 'taxi' | 'hold' | 'cross' | 'lineup';
 
 export interface VoiceResult {
   text: string;
+  interimText: string;
   confidence: number;
   status: VoiceStatus;
 }

@@ -39,16 +39,16 @@ export const InstructionPanel: React.FC<Props> = ({ instruction, validation }) =
       <div className="panel-body">
         <div className="data-row">
           <span className="label">ACTION</span>
-          <span className="value action-value">{instruction.action.toUpperCase()}</span>
+          <span className="value action-value">{instruction.action?.toUpperCase() ?? '—'}</span>
         </div>
         <div className="data-row">
           <span className="label">RUNWAY</span>
-          <span className="value">{instruction.runway}</span>
+          <span className="value">{instruction.runway ?? '—'}</span>
         </div>
         <div className="data-row route-row">
           <span className="label">ROUTE</span>
           <div className="route-tags">
-            {instruction.route.map((wp, idx) => (
+            {(instruction.route ?? []).map((wp, idx) => (
               <span key={`${wp}-${idx}`} className="route-tag">{wp}</span>
             ))}
           </div>
