@@ -69,12 +69,21 @@ Voice Module → NLU Module → Topology Module → Renderer Module
 
 #### 2.4 Renderer (`AirportCanvas`)
 
-- **技术:** Canvas 2D API
-- **四层绘制栈:**
-  1. L1 背景网格 (静态)
-  2. L2 滑行道网络 (静态, 暗灰)
-  3. L3 跑道 (静态)
-  4. L4 高亮路径 (动态, 冰蓝渐变+呼吸动画)
+- **技术:** Canvas 2D API + DOM Image
+- **六层绘制栈:**
+  1. L0 真实航图底图 (`ZLXY81.jpg` 以 `<img>` 元素加载，Canvas `drawImage` 绘制)
+  2. L1 暗色透明度遮罩 (`globalAlpha` 可调，飞行员可通过滑块在0%~100%间控制)
+  3. L2 数据化滑行道网络 (邻接表驱动，暗灰蓝)
+  4. L3 跑道标注 (静态)
+  5. L4 高亮路径 (动态, 冰蓝渐变+呼吸动画)
+  6. L5 UI浮层 (React DOM覆盖：指令面板、语音栏)
+
+**遮罩透明度机制:** 飞行员可通过UI滑块调节L1遮罩透明度：
+- 0% → 纯真实航图（传统纸质航图体验）
+- 75% → 默认值（航图隐约可见，数据化图层清晰）
+- 100% → 纯数据化视图（最大对比度）
+
+此设计使飞行员可在熟悉的真实航图与数据化视图间无缝过渡，降低认知切换成本。
 
 ### 状态管理
 
@@ -176,6 +185,7 @@ interface AirportTopology {
 - 飞机位置: 扩散光环 (radius 10→20, 2s循环)
 - 麦克风: 外圈脉冲 (listening状态)
 - 波形条: 随机高度震荡 (listening状态)
+- 遮罩滑块: 拖动时实时渐变过渡 (CSS transition 0.15s)
 
 ---
 
@@ -195,6 +205,9 @@ L3为MVP关键差异点——即便LLM产生幻觉，拓扑层仍可捕获不可
 
 ```
 y-jihcang-demo/
+├── public/
+│   └── charts/
+│       └── ZLXY81.jpg              # 真实航图底图
 ├── src/
 │   ├── App.tsx
 │   ├── main.tsx
@@ -205,7 +218,8 @@ y-jihcang-demo/
 │   │   └── useTopologyResolver.ts
 │   ├── components/
 │   │   ├── TopBar.tsx
-│   │   ├── AirportCanvas.tsx
+│   │   ├── AirportCanvas.tsx        # 六层Canvas渲染
+│   │   ├── OverlaySlider.tsx        # 遮罩透明度滑块
 │   │   ├── VoiceBar.tsx
 │   │   └── InstructionPanel.tsx
 │   ├── data/
