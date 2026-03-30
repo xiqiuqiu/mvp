@@ -1,0 +1,147 @@
+.editor-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background-color: #1a1a1a;
+  color: white;
+  font-family: sans-serif;
+}
+
+.editor-sidebar {
+  width: 300px;
+  background-color: #2a2a2a;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  border-right: 1px solid #444;
+  overflow-y: auto;
+}
+
+.editor-main {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.editor-mode-hint {
+  padding: 10px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  font-weight: bold;
+}
+
+.editor-canvas-wrapper {
+  flex: 1;
+  overflow: auto;
+  position: relative;
+}
+
+.editor-canvas {
+  background-color: #000;
+  display: block;
+}
+
+.editor-canvas.add_node {
+  cursor: crosshair;
+}
+
+.editor-canvas.select {
+  cursor: default;
+}
+
+.editor-canvas.connect {
+  cursor: pointer;
+}
+
+.tool-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.tool-buttons button {
+  flex: 1;
+  padding: 10px;
+  background-color: #444;
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.tool-buttons button.active {
+  background-color: #0088cc;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+}
+
+.actions button {
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.stats {
+  background-color: #333;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.properties {
+  background-color: #333;
+  padding: 15px;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.properties h3 {
+  margin-top: 0;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-group input, .form-group select {
+  padding: 8px;
+  background-color: #222;
+  color: white;
+  border: 1px solid #555;
+  border-radius: 4px;
+}
+
+.del-btn {
+  background-color: #cc0000;
+  color: white;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+.export-textarea {
+  flex: 1;
+  width: 100%;
+  background-color: #111;
+  color: #0f0;
+  border: 1px solid #555;
+  border-radius: 4px;
+  padding: 10px;
+  font-family: monospace;
+  font-size: 12px;
+  resize: none;
+  box-sizing: border-box;
+}

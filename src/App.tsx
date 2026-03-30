@@ -3,7 +3,6 @@ import { TopBar } from './components/TopBar';
 import { RightSidebar } from './components/RightSidebar';
 import { AirportCanvas } from './components/AirportCanvas';
 import { InstructionPanel } from './components/InstructionPanel';
-import { OverlaySlider } from './components/OverlaySlider';
 
 import { useVoiceRecognition } from './hooks/useVoiceRecognition';
 import { useInstructionParser } from './hooks/useInstructionParser';
@@ -64,6 +63,7 @@ function App() {
     if (voice.status === 'listening') {
       const startAudio = async () => {
         try {
+          if (!navigator.mediaDevices) throw new Error("MediaDevices API undefined (Needs HTTPS)");
           stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
           audioCtx = new window.AudioContext();
           const analyser = audioCtx.createAnalyser();
@@ -86,8 +86,9 @@ function App() {
             reqRef.current = requestAnimationFrame(update);
           };
           update();
-        } catch (e) {
+        } catch (e: any) {
           console.error("Audio Access Error:", e);
+          alert(`麦克风访问失败：${e.message || '可能需要在HTTPS环境下才能调用麦克风'}`);
         }
       };
       startAudio();
@@ -104,7 +105,11 @@ function App() {
 
   return (
     <div className="app-container">
-      <TopBar llmStatus={llmStatus} />
+      <TopBar 
+        llmStatus={llmStatus} 
+        overlayOpacity={overlayOpacity}
+        setOverlayOpacity={setOverlayOpacity}
+      />
       
       <div className="content-layout">
         <div className="main-area">
@@ -114,7 +119,6 @@ function App() {
             overlayOpacity={overlayOpacity}
           />
           <div className="overlays">
-            <OverlaySlider opacity={overlayOpacity} onChange={setOverlayOpacity} />
             <InstructionPanel instruction={instruction} validation={validation} />
           </div>
           
@@ -129,7 +133,8 @@ function App() {
             )}
             <button 
               className={`ptt-button ${voice.status === 'listening' ? 'listening' : ''}`}
-              onClick={voice.status === 'listening' ? stopListening : startListening}
+              onClick={(e) => { e.preventDefault(); voice.status === 'listening' ? stopListening() : startListening(); }}
+              onTouchStart={(e) => { e.preventDefault(); voice.status === 'listening' ? stopListening() : startListening(); }}
               style={{ cursor: 'pointer' }}
             >
               <span className="ptt-icon" style={{ fontSize: '28px' }}>

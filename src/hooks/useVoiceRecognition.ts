@@ -16,12 +16,13 @@ export function useVoiceRecognition() {
       (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
       
     if (!SpeechRecognition) {
+      alert("当前浏览器不支持语音识别（可能是因为在手机端未开启HTTPS），请使用HTTPS访问或更换浏览器。");
       setResult(r => ({ ...r, status: 'error' }));
       return;
     }
     
     const recognition = new SpeechRecognition();
-    recognition.lang = 'en-US';
+    recognition.lang = 'zh-CN'; // 改为支持中文
     recognition.interimResults = true;  // Enable real-time transcription
     recognition.maxAlternatives = 1;
     recognition.continuous = true;
@@ -49,7 +50,9 @@ export function useVoiceRecognition() {
       }
     };
 
-    recognition.onerror = () => {
+    recognition.onerror = (e: any) => {
+      console.error("Speech Recognition Error:", e);
+      alert(`语音识别报错：${e.error || '未知错误'}`);
       setResult(r => ({ ...r, status: 'error' }));
     };
 

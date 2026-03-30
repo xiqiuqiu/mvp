@@ -23,7 +23,7 @@ export interface TaxiNode {
   x: number;
   y: number;
   label: string;
-  type: 'intersection' | 'hold' | 'gate';
+  type: 'intersection' | 'hold' | 'gate' | 'runway_entrance' | 'stand';
   hotspot?: string;
 }
 
