@@ -10,8 +10,8 @@ export function useInstructionParser(onLog?: (msg: string, type: TerminalLog['ty
 
   const parseInstruction = useCallback(async (text: string) => {
     setStatus('loading');
-    if (onLog) onLog(`Received ATC Command: "${text}"`, 'info');
-    if (onLog) onLog(`Analyzing intent and extracting route topology...`, 'process');
+    if (onLog) onLog(`收到 ATC 指令: "${text}"`, 'info');
+    if (onLog) onLog(`正在分析意图并提取航路拓扑...`, 'process');
     try {
       let apiUrl = import.meta.env.VITE_LLM_API_URL;
       
@@ -48,13 +48,13 @@ export function useInstructionParser(onLog?: (msg: string, type: TerminalLog['ty
       setInstruction(parsed);
       setStatus('done');
       if (onLog) {
-        onLog(`LLM Parsing Success. Target Route Nodes: [${parsed.route.join(' → ')}]`, 'success');
-        onLog(`Path drawing engaged. Commencing visual guidance.`, 'process');
+        onLog(`LLM 解析成功。目标航点: [${parsed.route.join(' → ')}]`, 'success');
+        onLog(`路径绘制已就绪，正在呈现视觉引导。`, 'process');
       }
       return parsed;
     } catch {
       setStatus('error');
-      if (onLog) onLog(`Failed to parse ATC command. Please check model connection.`, 'error');
+      if (onLog) onLog(`解析 ATC 指令失败，请检查模型连接。`, 'error');
       return null;
     }
   }, [onLog]);

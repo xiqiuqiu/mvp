@@ -18,7 +18,7 @@ export const TopBar: React.FC<TopBarProps> = ({ llmStatus, wifiStatus = true, ov
       </div>
       <div className="topbar-right">
         <div className="topbar-slider">
-          <span className="topbar-slider-label">MASK OPACITY</span>
+          <span className="topbar-slider-label">底图不透明度</span>
           <input
             type="range"
             className="horizontal-slider"
@@ -35,7 +35,7 @@ export const TopBar: React.FC<TopBarProps> = ({ llmStatus, wifiStatus = true, ov
           <div className={`status-led ${llmStatus === 'loading' ? 'pulsing' : ''} ${llmStatus === 'error' ? 'error' : 'ok'}`} />
         </div>
         <div className="status-indicator">
-          <span className="status-label">SYS</span>
+          <span className="status-label">系统</span>
           <div className={`status-led ${wifiStatus ? 'ok' : 'error'}`} />
         </div>
       </div>

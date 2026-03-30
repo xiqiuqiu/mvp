@@ -76,7 +76,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
   if (isCollapsed) {
     return (
       <div className="right-sidebar collapsed" style={{ width: '40px', padding: '12px 8px', alignItems: 'center', cursor: 'pointer', justifyContent: 'flex-start' }} onClick={() => setIsCollapsed(false)}>
-        <span className="icon" title="Expand Panel" style={{ color: 'var(--accent-light)' }}>◀</span>
+        <span className="icon" title="展开面板" style={{ color: 'var(--accent-light)' }}>◀</span>
       </div>
     );
   }
@@ -84,20 +84,20 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
   return (
     <div className="right-sidebar">
       <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '-8px 0 8px 0' }}>
-        <button onClick={() => setIsCollapsed(true)} style={{ background: 'transparent', border: 'none', color: 'var(--text-dim)', cursor: 'pointer', fontSize: '16px', display: 'flex', alignItems: 'center', gap: '4px' }} title="Collapse Panel">
-          ▶ <span style={{ fontSize: '12px' }}>Collapse Settings</span>
+        <button onClick={() => setIsCollapsed(true)} style={{ background: 'transparent', border: 'none', color: 'var(--text-dim)', cursor: 'pointer', fontSize: '16px', display: 'flex', alignItems: 'center', gap: '4px' }} title="折叠面板">
+          ▶ <span style={{ fontSize: '12px' }}>折叠设置</span>
         </button>
       </div>
       
       {/* 1. Command Input */}
       <div className="sidebar-section">
         <div className="section-title">
-          <span className="icon">🎙</span> Voice / Text Command
+          <span className="icon">🎙</span> 语音 / 文本指令
         </div>
         <div className="command-box">
           <textarea
             className="command-textarea"
-            placeholder="e.g. Taxi to holding point Runway 05L via taxiway M, J and A"
+            placeholder="例如：经过滑行道 M, J 和 A 前往 05L 跑道等待点"
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
           />
@@ -114,7 +114,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
               onClick={isListening ? onMicReleaseStore : onMicPressStore}
             >🎙</button>
             <button className="execute-button" onClick={handleExecute}>
-              <span className="icon">➤</span> EXECUTE
+              <span className="icon">➤</span> 执行指令
             </button>
           </div>
         </div>
@@ -122,7 +122,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
 
       {/* 2. Quick Demo Scenarios */}
       <div className="sidebar-section">
-        <div className="section-title-sub">Quick Demo Scenarios:</div>
+        <div className="section-title-sub">快速演示场景：</div>
         <div className="scenarios-list">
           <button className="scenario-btn" onClick={() => handleShortcut("Taxi from A1 via taxiway A to holding point Runway 05L at A10")}>
             1. 北跑道直行: "A1 to RWY 05L via A to A10"
@@ -136,7 +136,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
       {/* 3. LLM Terminal */}
       <div className="sidebar-section terminal-section">
         <div className="section-title">
-          <span className="icon">⌨</span> LLM Parser Terminal
+          <span className="icon">⌨</span> LLM 解析终端
         </div>
         <div className="terminal-window" ref={terminalLogsRef}>
           {[...terminalLogs].reverse().map((log) => (

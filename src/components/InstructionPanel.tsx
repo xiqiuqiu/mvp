@@ -33,20 +33,20 @@ export const InstructionPanel: React.FC<Props> = ({ instruction, validation }) =
   return (
     <div className="instruction-panel">
       <div className="panel-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span>Parsed Instruction ({countdown}s)</span>
+        <span>指令解析 ({countdown}秒)</span>
         <button onClick={() => setVisible(false)} className="close-btn" style={{ background: 'transparent', border: 'none', color: 'var(--text-dim)', cursor: 'pointer', fontSize: '14px' }}>✖</button>
       </div>
       <div className="panel-body">
         <div className="data-row">
-          <span className="label">ACTION</span>
+          <span className="label">动作</span>
           <span className="value action-value">{instruction.action?.toUpperCase() ?? '—'}</span>
         </div>
         <div className="data-row">
-          <span className="label">RUNWAY</span>
+          <span className="label">跑道</span>
           <span className="value">{instruction.runway ?? '—'}</span>
         </div>
         <div className="data-row route-row">
-          <span className="label">ROUTE</span>
+          <span className="label">路径</span>
           <div className="route-tags">
             {(instruction.route ?? []).map((wp, idx) => (
               <span key={`${wp}-${idx}`} className="route-tag">{wp}</span>
@@ -55,7 +55,7 @@ export const InstructionPanel: React.FC<Props> = ({ instruction, validation }) =
         </div>
         {instruction.holdPoint && (
           <div className="data-row">
-            <span className="label">HOLD SHORT</span>
+            <span className="label">等待点</span>
             <span className="value hold-value">{instruction.holdPoint}</span>
           </div>
         )}
@@ -64,7 +64,7 @@ export const InstructionPanel: React.FC<Props> = ({ instruction, validation }) =
       {!validation.connected && validation.errors.length > 0 && (
         <div className="validation-error">
           <span className="error-icon">⚠</span>
-          <span className="error-text">Path not connected: {validation.errors[0]}</span>
+          <span className="error-text">路径未连通: {validation.errors[0]}</span>
         </div>
       )}
     </div>

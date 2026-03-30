@@ -8,7 +8,7 @@ interface Props {
 export const OverlaySlider: React.FC<Props> = ({ opacity, onChange }) => {
   return (
     <div className="overlay-slider-container">
-      <div className="slider-label">MASK OPACITY</div>
+      <div className="slider-label">底图不透明度</div>
       <div className="slider-value">{Math.round(opacity * 100)}%</div>
       <input
         type="range"

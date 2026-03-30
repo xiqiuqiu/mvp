@@ -16,7 +16,7 @@ function App() {
 
   const addLog = useCallback(
     (message: string, type: TerminalLog["type"] = "info") => {
-      const time = new Date().toLocaleTimeString("en-US", { hour12: true });
+      const time = new Date().toLocaleTimeString("zh-CN", { hour12: false });
       setTerminalLogs((prev) => [
         ...prev,
         { id: Math.random().toString(), time: `[${time}]`, message, type },
@@ -39,7 +39,7 @@ function App() {
 
   // Init log
   useEffect(() => {
-    addLog("System initialized. Awaiting ATC instructions.", "info");
+    addLog("系统初始化完成。等待 ATC 指令。", "info");
   }, [addLog]);
 
   // When new instruction arrives, resolve topology
@@ -49,7 +49,7 @@ function App() {
       setResolvedPath(path);
       setValidation(valResp);
       if (!valResp.connected) {
-        addLog(`Validation Error: Path disconnected at constraints.`, "error");
+        addLog(`验证错误：路径在约束点断开。`, "error");
       }
     }
   }, [instruction, resolve, addLog]);
@@ -137,7 +137,7 @@ function App() {
             {/* Live Transcription */}
             {voice.status === "listening" && voice.interimText && (
               <div className="live-transcript">
-                <span className="transcript-label">🔤 LIVE</span>
+                <span className="transcript-label">🔤 实时</span>
                 <span className="transcript-text">{voice.interimText}</span>
               </div>
             )}
