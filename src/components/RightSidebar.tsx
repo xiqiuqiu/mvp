@@ -18,6 +18,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
 }) => {
   const isListening = voice.status === 'listening';
   const [inputText, setInputText] = useState('');
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const terminalLogsRef = useRef<HTMLDivElement>(null);
 
   // Auto-fill voice text
@@ -47,8 +48,22 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
     setInputText('');
   };
 
+  if (isCollapsed) {
+    return (
+      <div className="right-sidebar collapsed" style={{ width: '40px', padding: '12px 8px', alignItems: 'center', cursor: 'pointer', justifyContent: 'flex-start' }} onClick={() => setIsCollapsed(false)}>
+        <span className="icon" title="Expand Panel" style={{ color: 'var(--accent-light)' }}>◀</span>
+      </div>
+    );
+  }
+
   return (
     <div className="right-sidebar">
+      <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '-8px 0 8px 0' }}>
+        <button onClick={() => setIsCollapsed(true)} style={{ background: 'transparent', border: 'none', color: 'var(--text-dim)', cursor: 'pointer', fontSize: '16px', display: 'flex', alignItems: 'center', gap: '4px' }} title="Collapse Panel">
+          ▶ <span style={{ fontSize: '12px' }}>Collapse Settings</span>
+        </button>
+      </div>
+      
       {/* 1. Command Input */}
       <div className="sidebar-section">
         <div className="section-title">

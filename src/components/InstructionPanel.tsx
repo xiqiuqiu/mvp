@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import type { ParsedInstruction, ValidationResult } from '../types/atc';
 
 interface Props {
@@ -6,11 +7,35 @@ interface Props {
 }
 
 export const InstructionPanel: React.FC<Props> = ({ instruction, validation }) => {
-  if (!instruction) return null;
+  const [visible, setVisible] = useState(true);
+  const [countdown, setCountdown] = useState(8);
+
+  useEffect(() => {
+    if (instruction) {
+      setVisible(true);
+      setCountdown(8);
+      const timer = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            setVisible(false);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [instruction]);
+
+  if (!instruction || !visible) return null;
 
   return (
     <div className="instruction-panel">
-      <div className="panel-header">Parsed Instruction</div>
+      <div className="panel-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span>Parsed Instruction ({countdown}s)</span>
+        <button onClick={() => setVisible(false)} className="close-btn" style={{ background: 'transparent', border: 'none', color: 'var(--text-dim)', cursor: 'pointer', fontSize: '14px' }}>✖</button>
+      </div>
       <div className="panel-body">
         <div className="data-row">
           <span className="label">ACTION</span>
