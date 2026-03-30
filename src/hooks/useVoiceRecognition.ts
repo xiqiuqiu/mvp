@@ -38,16 +38,13 @@ export function useVoiceRecognition() {
           interim += transcript;
         }
       }
-      if (final) {
-        setResult({
-          text: final,
-          interimText: '',
-          confidence: event.results[event.results.length - 1][0].confidence,
-          status: 'done',
-        });
-      } else {
-        setResult(r => ({ ...r, interimText: interim }));
-      }
+      setResult(r => ({ 
+        ...r, 
+        text: final, 
+        interimText: interim,
+        // Update confidence if a final result exists
+        confidence: final ? event.results[event.results.length - 1][0].confidence : r.confidence
+      }));
     };
 
     recognition.onerror = (e: any) => {
@@ -69,7 +66,10 @@ export function useVoiceRecognition() {
   const stop = useCallback(() => {
     if (recognitionRef.current) {
       recognitionRef.current.stop();
+      recognitionRef.current = null;
     }
+    // 主动设 idle，不依赖 onend（移动端 onend 回调不可靠）
+    setResult(r => ({ ...r, status: 'idle' }));
   }, []);
 
   return { voice: result, startListening: start, stopListening: stop };

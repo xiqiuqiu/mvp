@@ -21,12 +21,37 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
   const [isCollapsed, setIsCollapsed] = useState(false);
   const terminalLogsRef = useRef<HTMLDivElement>(null);
 
-  // Auto-fill voice text
+  const debounceTimerRef = useRef<number | null>(null);
+  const lastVoiceRef = useRef<string>('');
+
+  // Auto-fill voice text and auto-submit on silence
   useEffect(() => {
-    if (voice.text && voice.status !== 'idle') {
-      setInputText(voice.text);
+    if (isListening) {
+      const combined = (voice.text + (voice.interimText || '')).trim();
+      if (combined) {
+        setInputText(combined);
+
+        // Reset the timer when new text arrives
+        if (combined !== lastVoiceRef.current) {
+          lastVoiceRef.current = combined;
+          if (debounceTimerRef.current) window.clearTimeout(debounceTimerRef.current);
+          debounceTimerRef.current = window.setTimeout(() => {
+            onSendInstruction(combined);
+            setInputText('');
+            onMicReleaseStore();
+          }, 3000); // 3 seconds of silence to auto-execute
+        }
+      }
+    } else {
+      if (debounceTimerRef.current) window.clearTimeout(debounceTimerRef.current);
+      lastVoiceRef.current = '';
     }
-  }, [voice.text, voice.status]);
+    
+    // Cleanup on unmount
+    return () => {
+      if (debounceTimerRef.current) window.clearTimeout(debounceTimerRef.current);
+    };
+  }, [voice.text, voice.interimText, isListening, onSendInstruction, onMicReleaseStore]);
 
   // Auto scroll terminal to top
   useEffect(() => {

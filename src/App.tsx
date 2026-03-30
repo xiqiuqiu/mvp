@@ -1,47 +1,46 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { TopBar } from './components/TopBar';
-import { RightSidebar } from './components/RightSidebar';
-import { AirportCanvas } from './components/AirportCanvas';
-import { InstructionPanel } from './components/InstructionPanel';
+import { useState, useEffect, useCallback, useRef } from "react";
+import { TopBar } from "./components/TopBar";
+import { RightSidebar } from "./components/RightSidebar";
+import { AirportCanvas } from "./components/AirportCanvas";
+import { InstructionPanel } from "./components/InstructionPanel";
 
-import { useVoiceRecognition } from './hooks/useVoiceRecognition';
-import { useInstructionParser } from './hooks/useInstructionParser';
-import { useTopologyResolver } from './hooks/useTopologyResolver';
-import type { TaxiNode, ValidationResult, TerminalLog } from './types/atc';
+import { useVoiceRecognition } from "./hooks/useVoiceRecognition";
+import { useInstructionParser } from "./hooks/useInstructionParser";
+import { useTopologyResolver } from "./hooks/useTopologyResolver";
+import type { TaxiNode, ValidationResult, TerminalLog } from "./types/atc";
 
 function App() {
   const [terminalLogs, setTerminalLogs] = useState<TerminalLog[]>([]);
   const [audioLevels, setAudioLevels] = useState<number[]>(Array(5).fill(0));
   const reqRef = useRef<number>(0);
 
-  const addLog = useCallback((message: string, type: TerminalLog['type'] = 'info') => {
-    const time = new Date().toLocaleTimeString('en-US', { hour12: true });
-    setTerminalLogs(prev => [...prev, { id: Math.random().toString(), time: `[${time}]`, message, type }]);
-  }, []);
+  const addLog = useCallback(
+    (message: string, type: TerminalLog["type"] = "info") => {
+      const time = new Date().toLocaleTimeString("en-US", { hour12: true });
+      setTerminalLogs((prev) => [
+        ...prev,
+        { id: Math.random().toString(), time: `[${time}]`, message, type },
+      ]);
+    },
+    [],
+  );
 
   const { voice, startListening, stopListening } = useVoiceRecognition();
-  const { instruction, llmStatus, parseInstruction } = useInstructionParser(addLog);
+  const { instruction, llmStatus, parseInstruction } =
+    useInstructionParser(addLog);
   const { resolve, topology } = useTopologyResolver();
 
   const [overlayOpacity, setOverlayOpacity] = useState(0.75);
   const [resolvedPath, setResolvedPath] = useState<TaxiNode[] | null>(null);
-  const [validation, setValidation] = useState<ValidationResult>({ connected: true, errors: [] });
+  const [validation, setValidation] = useState<ValidationResult>({
+    connected: true,
+    errors: [],
+  });
 
   // Init log
   useEffect(() => {
-    addLog("System initialized. Awaiting ATC instructions.", 'info');
+    addLog("System initialized. Awaiting ATC instructions.", "info");
   }, [addLog]);
-
-  // When voice status changes to 'done', trigger parsing
-  useEffect(() => {
-    if (voice.status === 'done' && voice.text) {
-      if (voice.confidence < 0.6) {
-        addLog(`Low voice confidence: "${voice.text}". Please speak more clearly.`, 'error');
-        return;
-      }
-      parseInstruction(voice.text);
-    }
-  }, [voice.status, voice.text, voice.confidence, parseInstruction]);
 
   // When new instruction arrives, resolve topology
   useEffect(() => {
@@ -50,7 +49,7 @@ function App() {
       setResolvedPath(path);
       setValidation(valResp);
       if (!valResp.connected) {
-        addLog(`Validation Error: Path disconnected at constraints.`, 'error');
+        addLog(`Validation Error: Path disconnected at constraints.`, "error");
       }
     }
   }, [instruction, resolve, addLog]);
@@ -59,18 +58,22 @@ function App() {
   useEffect(() => {
     let audioCtx: AudioContext | null = null;
     let stream: MediaStream | null = null;
-    
-    if (voice.status === 'listening') {
+
+    if (voice.status === "listening") {
       const startAudio = async () => {
         try {
-          if (!navigator.mediaDevices) throw new Error("MediaDevices API undefined (Needs HTTPS)");
-          stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+          if (!navigator.mediaDevices)
+            throw new Error("MediaDevices API undefined (Needs HTTPS)");
+          stream = await navigator.mediaDevices.getUserMedia({
+            audio: true,
+            video: false,
+          });
           audioCtx = new window.AudioContext();
           const analyser = audioCtx.createAnalyser();
           analyser.fftSize = 64;
           const source = audioCtx.createMediaStreamSource(stream);
           source.connect(analyser);
-          
+
           const dataArray = new Uint8Array(analyser.frequencyBinCount);
           const update = () => {
             if (!analyser) return;
@@ -88,7 +91,9 @@ function App() {
           update();
         } catch (e: any) {
           console.error("Audio Access Error:", e);
-          alert(`麦克风访问失败：${e.message || '可能需要在HTTPS环境下才能调用麦克风'}`);
+          alert(
+            `麦克风访问失败：${e.message || "可能需要在HTTPS环境下才能调用麦克风"}`,
+          );
         }
       };
       startAudio();
@@ -98,62 +103,70 @@ function App() {
 
     return () => {
       if (reqRef.current) cancelAnimationFrame(reqRef.current);
-      if (audioCtx && audioCtx.state !== 'closed') audioCtx.close();
-      if (stream) stream.getTracks().forEach(t => t.stop());
+      if (audioCtx && audioCtx.state !== "closed") audioCtx.close();
+      if (stream) stream.getTracks().forEach((t) => t.stop());
     };
   }, [voice.status]);
 
   return (
     <div className="app-container">
-      <TopBar 
-        llmStatus={llmStatus} 
+      <TopBar
+        llmStatus={llmStatus}
         overlayOpacity={overlayOpacity}
         setOverlayOpacity={setOverlayOpacity}
       />
-      
+
       <div className="content-layout">
         <div className="main-area">
-          <AirportCanvas 
+          <AirportCanvas
             topology={topology}
             highlightPath={resolvedPath}
             overlayOpacity={overlayOpacity}
           />
           <div className="overlays">
-            <InstructionPanel instruction={instruction} validation={validation} />
+            <InstructionPanel
+              instruction={instruction}
+              validation={validation}
+            />
           </div>
-          
+
           {/* EFB PTT Button */}
-          <div className={`ptt-container ${voice.status === 'listening' ? 'active' : ''}`}>
+          <div
+            className={`ptt-container ${voice.status === "listening" ? "active" : ""}`}
+          >
             {/* Live Transcription */}
-            {voice.status === 'listening' && voice.interimText && (
+            {voice.status === "listening" && voice.interimText && (
               <div className="live-transcript">
                 <span className="transcript-label">🔤 LIVE</span>
                 <span className="transcript-text">{voice.interimText}</span>
               </div>
             )}
-            <button 
-              className={`ptt-button ${voice.status === 'listening' ? 'listening' : ''}`}
-              onClick={(e) => { e.preventDefault(); voice.status === 'listening' ? stopListening() : startListening(); }}
-              onTouchStart={(e) => { e.preventDefault(); voice.status === 'listening' ? stopListening() : startListening(); }}
-              style={{ cursor: 'pointer' }}
+            <button
+              className={`ptt-button ${voice.status === "listening" ? "listening" : ""}`}
+              onClick={() => {
+                voice.status === "listening"
+                  ? stopListening()
+                  : startListening();
+              }}
+              style={{ cursor: "pointer" }}
             >
-              <span className="ptt-icon" style={{ fontSize: '28px' }}>
-                {voice.status === 'listening' ? '⏹' : '🎙'}
+              <span className="ptt-icon" style={{ fontSize: "28px" }}>
+                {voice.status === "listening" ? "⏹" : "🎙"}
               </span>
-              {voice.status === 'listening' ? 'STOP ● RECORDING' : 'START LISTENING'}
+              {voice.status === "listening" ? "停止听报" : "开始听报"}
             </button>
             <div className="ptt-waveform-container">
               {audioLevels.map((level, i) => (
-                <div 
-                  key={i} 
-                  className="audio-bar" 
-                  style={{ height: `${Math.max(4, level * 40)}px` }} 
+                <div
+                  key={i}
+                  className="audio-bar"
+                  style={{ height: `${Math.max(4, level * 40)}px` }}
                 />
               ))}
             </div>
           </div>
         </div>
-        
+
         <RightSidebar
           voice={voice}
           terminalLogs={terminalLogs}
