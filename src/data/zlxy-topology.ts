@@ -1,5 +1,5 @@
 // src/data/zlxy-topology.ts
-import { AirportTopology, TaxiNode, TaxiEdge, RunwayData } from '../types/atc';
+import type { AirportTopology, TaxiNode, TaxiEdge, RunwayData } from '../types/atc';
 
 const nodes: Record<string, TaxiNode> = {
   // Runway 05L/23R intersections (north runway)
